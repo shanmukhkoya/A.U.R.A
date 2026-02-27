@@ -1,0 +1,67 @@
+# ═══════════════════════════════════════════════════════════════
+# Autonomous Research & Solution Architect Agent — Configuration
+# ═══════════════════════════════════════════════════════════════
+
+# ┌─────────────────────────────────────────────────────────────┐
+# │ Active Provider                                              │
+# │ Options: ollama, openai, anthropic, google                   │
+# │ Switch between local and cloud models by changing this value │
+# └─────────────────────────────────────────────────────────────┘
+provider: ollama
+
+# ┌─────────────────────────────────────────────────────────────┐
+# │ Ollama — Local Models (FREE, No API Key)                     │
+# │ Make sure Ollama is running: ollama serve                    │
+# │ Popular models: llama3, mistral, phi3, gemma2                │
+# └─────────────────────────────────────────────────────────────┘
+ollama:
+  base_url: http://localhost:11434
+  model: llama3
+
+# ┌─────────────────────────────────────────────────────────────┐
+# │ OpenAI — Also works with any OpenAI-compatible API           │
+# │ (Groq, Together AI, LM Studio, Azure OpenAI, etc.)          │
+# │ Set OPENAI_API_KEY in .env                                   │
+# └─────────────────────────────────────────────────────────────┘
+openai:
+  base_url: https://api.openai.com/v1
+  model: gpt-4o-mini
+
+# ┌─────────────────────────────────────────────────────────────┐
+# │ Anthropic — Claude Models                                    │
+# │ Set ANTHROPIC_API_KEY in .env                                │
+# └─────────────────────────────────────────────────────────────┘
+anthropic:
+  model: claude-3-5-sonnet-20241022
+
+# ┌─────────────────────────────────────────────────────────────┐
+# │ Google — Gemini Models                                       │
+# │ Set GOOGLE_API_KEY in .env                                   │
+# └─────────────────────────────────────────────────────────────┘
+google:
+  model: gemini-2.0-flash
+
+# ┌─────────────────────────────────────────────────────────────┐
+# │ Agent Behavior                                               │
+# └─────────────────────────────────────────────────────────────┘
+agent:
+  # How many reflect-and-iterate cycles (max)
+  max_iterations: 3
+  
+  # Number of search results per query
+  max_search_results: 5
+  
+  # Research depth: quick (3 queries), detailed (5), exhaustive (8)
+  research_depth: detailed
+
+  # Small model mode: auto-detects by default.
+  # Set to true to force optimized settings for small models (phi3, gemma2:2b, etc.)
+  # Reduces token usage, uses compact prompts, extracts less content.
+  # small_model_mode: true
+
+# ┌─────────────────────────────────────────────────────────────┐
+# │ Output                                                       │
+# └─────────────────────────────────────────────────────────────┘
+output:
+  directory: outputs
+  format: markdown

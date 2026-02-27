@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 Autonomous Agent — Research & Solution Architect</title>
+    <meta name="description"
+        content="An autonomous AI agent that plans, researches, reflects, and generates comprehensive reports. Supports Ollama, OpenAI, Anthropic, and Google Gemini.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- BACKGROUND PARTICLES -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div class="bg-particles" id="particles"></div>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- HEADER -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <header class="header">
+        <div class="header-brand">
+            <div class="brand-icon">🤖</div>
+            <div>
+                <h1 class="brand-title">Autonomous Agent</h1>
+                <p class="brand-subtitle">Research & Solution Architect</p>
+            </div>
+        </div>
+        <div class="header-status">
+            <span class="status-dot" id="statusDot"></span>
+            <span class="status-text" id="statusText">Ready</span>
+        </div>
+    </header>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!-- MAIN CONTENT -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <main class="main-content">
+        <!-- LEFT PANEL: Input & Config -->
+        <aside class="panel panel-config" id="configPanel">
+            <div class="panel-header">
+                <h2>⚡ Mission Control</h2>
+            </div>
+
+            <div class="panel-body">
+                <!-- Provider Selection -->
+                <div class="form-group">
+                    <label class="form-label">LLM Provider</label>
+                    <select class="form-select" id="providerSelect">
+                        <option value="ollama">🖥️ Ollama (Local)</option>
+                        <option value="openai">🟢 OpenAI</option>
+                        <option value="anthropic">🟣 Anthropic</option>
+                        <option value="google">🔵 Google Gemini</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Model</label>
+                    <select class="form-select" id="modelSelect">
+                        <option value="llama3">llama3</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Research Depth</label>
+                    <div class="depth-selector">
+                        <button class="depth-btn" data-depth="quick" title="3 queries, fast">⚡ Quick</button>
+                        <button class="depth-btn active" data-depth="detailed" title="5 queries, balanced">🔍
+                            Detailed</button>
+                        <button class="depth-btn" data-depth="exhaustive" title="8 queries, thorough">🔬
+                            Exhaustive</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Research Goal</label>
+                    <textarea class="form-textarea" id="goalInput" rows="5"
+                        placeholder="e.g., Design a CCaaS migration plan from Avaya to Genesys Cloud for a 500-seat contact center with CTI integrations"></textarea>
+                </div>
+
+                <button class="btn-primary" id="runBtn" onclick="startAgent()">
+                    <span class="btn-icon">🚀</span>
+                    <span>Launch Agent</span>
+                </button>
+
+                <button class="btn-secondary hidden" id="stopBtn" onclick="stopAgent()">
+                    <span class="btn-icon">⏹</span>
+                    <span>Stop & Reset</span>
+                </button>
+
+                <button class="btn-secondary report-toggle-btn hidden" id="reportToggleBtn"
+                    onclick="toggleReportModal()">
+                    <span class="btn-icon">📄</span>
+                    <span>View Report</span>
+                </button>
+
+                <!-- Quick Examples -->
+                <div class="examples">
+                    <p class="examples-title">💡 Quick Examples</p>
+                    <div class="example-chips">
+                        <button class="chip"
+                            onclick="setGoal('Design a CCaaS migration plan from Avaya to Genesys Cloud for a 500-seat contact center')">
+                            Avaya → Genesys Migration
+                        </button>
+                        <button class="chip"
+                            onclick="setGoal('Compare CTI integration approaches: Cisco UCCE JTAPI vs Amazon Connect Streams API vs Genesys Cloud Platform API')">
+                            CTI Integration Comparison
+                        </button>
+                        <button class="chip"
+                            onclick="setGoal('SIP trunk failover and redundancy architecture best practices for enterprise contact centers')">
+                            SIP Trunk Failover
+                        </button>
+                        <button class="chip"
+                            onclick="setGoal('AI-powered agent assist and real-time transcription solution architecture for contact centers')">
+                            AI Agent Assist Design
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CENTER PANEL: Agent Activity -->
+        <section class="panel panel-activity">
+            <div class="panel-header">
+                <h2>🧠 Agent Thought Process</h2>
+                <div class="iteration-badge" id="iterBadge">Iteration 0</div>
+            </div>
+
+            <!-- Agent phases visualization -->
+            <div class="phase-tracker" id="phaseTracker">
+                <div class="phase-step" data-phase="plan">
+                    <div class="phase-icon">📋</div>
+                    <span>Plan</span>
+                </div>
+                <div class="phase-connector"></div>
+                <div class="phase-step" data-phase="execute">
+                    <div class="phase-icon">🔍</div>
+                    <span>Research</span>
+                </div>
+                <div class="phase-connector"></div>
+                <div class="phase-step" data-phase="reflect">
+                    <div class="phase-icon">🤔</div>
+                    <span>Reflect</span>
+                </div>
+                <div class="phase-connector"></div>
+                <div class="phase-step" data-phase="synthesize">
+                    <div class="phase-icon">📝</div>
+                    <span>Report</span>
+                </div>
+            </div>
+
+            <!-- Log Stream -->
+            <div class="log-container" id="logContainer">
+                <div class="log-placeholder" id="logPlaceholder">
+                    <div class="placeholder-icon">🤖</div>
+                    <p>Your autonomous agent is ready.</p>
+                    <p class="placeholder-sub">Set a goal and launch to see the agent think, plan, research, and reason
+                        in real-time.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT PANEL: Report Output -->
+        <section class="panel panel-report" id="reportPanel">
+            <div class="panel-header">
+                <h2>📄 Generated Report</h2>
+                <div class="report-actions hidden" id="reportActions">
+                    <button class="btn-icon-only" onclick="copyReport()" title="Copy to clipboard">📋</button>
+                    <button class="btn-icon-only" onclick="downloadReport()" title="Download .md">💾</button>
+                </div>
+            </div>
+            <div class="report-container" id="reportContainer">
+                <div class="report-placeholder">
+                    <div class="placeholder-icon">📝</div>
+                    <p>Report will appear here</p>
+                    <p class="placeholder-sub">The agent will generate a comprehensive research report after completing
+                        its autonomous research cycle.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Report overlay for responsive view -->
+    <div class="report-overlay" id="reportOverlay" onclick="closeReportModal()"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
