@@ -14,6 +14,7 @@ from .planner import Planner
 from .executor import Executor
 from .reflector import Reflector
 from .memory import WorkingMemory
+from .guardrails import Guardrails
 from .prompts import (
     get_system_prompt, get_planning_prompt, get_report_prompt,
     TITLE_PROMPT,
@@ -53,9 +54,11 @@ class AutonomousAgent:
             compact_mode=self.compact,
         )
         self.reflector = Reflector(self.llm)
+        self.guardrails = Guardrails(self.llm)
 
         # Wire up logging
         self.executor.set_logger(self._log)
+        self.guardrails.set_logger(self._log)
 
     def set_log_callback(self, callback: Callable):
         """Set a callback function for real-time logging (for UI/CLI)."""
@@ -138,6 +141,11 @@ class AutonomousAgent:
             reflection = self.reflector.evaluate(goal, research_summary,
                                                  compact=self.compact)
 
+            # Guardrails: Format Check & Fast-Retry
+            if not self.guardrails.validate_reflection_format(reflection.get("raw", "")):
+                self._log("reflect", "⚠️ Retrying reflection due to formatting error...")
+                reflection = self.reflector.evaluate(goal, research_summary, compact=self.compact)
+
             self.memory.add_reflection(
                 completeness=reflection["completeness"],
                 depth=reflection["depth"],
@@ -206,6 +214,11 @@ class AutonomousAgent:
 
         max_tokens = self.config.max_report_tokens
         report = self.llm.generate(messages, temperature=0.4, max_tokens=max_tokens)
+        
+        # Guardrails: Hallucination Check
+        if not self.guardrails.check_hallucination(report, all_findings, compact=self.compact):
+            report += "\n\n> **⚠️ GUARDRAIL WARNING:** Hallucination Guardrail triggered. Some facts in this report may not be present in the source context."
+            
         return report
 
     def save_report(self, report: str, filename: str = None) -> str:

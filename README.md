@@ -33,7 +33,8 @@ Most AI research tools are simply wrappers around a single prompt. A.U.R.A. is d
   - 🟣 **Anthropic** (Claude 3.5 Sonnet, Claude 3 Opus)
   - 🔵 **Google** (Gemini 2.0 Flash)
 - **Automatic "Compact" Mode:** Automatically detects small < 4B parameter models (like `phi3` or `gemma2:2b`) and drastically optimizes prompts, scrape payloads, and expected output lengths to prevent CPU timeouts.
-- **Robust Parsing:** Small models fail at JSON. A.U.R.A. uses line-oriented text parsing with Regex fallbacks, making it virtually crash-proof.
+- **Robust Parsing & Guardrails:** Small models fail at JSON. A.U.R.A. uses Regex parsing combined with a runtime `guardrails.py` middleware to enforce formats and verify report groundedness (catching hallucinations).
+- **Standalone Evals Framework:** A fully integrated `evals` suite using LLM-as-a-judge to benchmark the agent's Relevance, Accuracy, and Formatting against ground-truth datasets.
 - **Beautiful Real-time UI:** Watch the agent "think" via a dark-mode Web UI powered by Server-Sent Events (SSE) that won't timeout your browser.
 
 ---
@@ -108,7 +109,8 @@ graph TD;
     EXEC_ANALYZE --> REFLECT[🤔 Reflector: Quality evaluation];
     
     REFLECT -- "Score < 8/10 (MORE Tasks)" --> EXEC_SEARCH;
-    REFLECT -- "Score > 8/10 (SUFFICIENT)" --> REPORT[📑 Synthesizer: Final Markdown Report];
+    REFLECT -- "Score > 8/10 (SUFFICIENT)" --> REPORT[📑 Synthesizer: Final Markdown];
+    REPORT --> GUARD[🛡️ Guardrails: Hallucination Check];
 ```
 
 A.U.R.A. decouples the **Flask Web Server** from the **Agent Thread** using a background daemon and `queue.Queue()`. The frontend hooks into an `/api/stream` endpoint, reading Server-Sent Events (SSE) to paint the agent's real-time thoughts without HTTP timeout constraints.

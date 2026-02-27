@@ -1,0 +1,21 @@
+[
+    {
+        "id": "q1_sip_trunking",
+        "question": "What is SIP Trunking and what are its primary benefits over traditional landline phones?",
+        "expected_facts": [
+            "SIP stands for Session Initiation Protocol.",
+            "It connects a PBX to the internet replacing traditional PRI lines.",
+            "Primary benefits include cost savings (no physical lines), scalability, and flexibility."
+        ]
+    },
+    {
+        "id": "q2_ccaas_migration",
+        "question": "What are the key steps to migrate an on-premise Avaya contact center to Genesys Cloud?",
+        "expected_facts": [
+            "Assessment and Discovery of current Avaya routing, agents, and integrations.",
+            "Network and Security readiness (SIP, WebRTC).",
+            "Designing Genesys Cloud architecture (Architect flows, queues).",
+            "Phased migration or cutover strategy."
+        ]
+    }
+]
