@@ -1,158 +1,142 @@
-# 🤖 Autonomous Research & Solution Architect Agent
+<div align="center">
 
-An **autonomous AI agent** that thinks, plans, researches, reflects, and generates comprehensive reports — all on its own. Built for Contact Center, VoIP, CTI, and enterprise communications research, but works for **any domain**.
+# 🤖 A.U.R.A. 
+**Autonomous Universal Research Agent**
 
-```
-  ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-  │   📋 PLAN   │────▶│ 🔍 RESEARCH │────▶│ 🤔 REFLECT  │────▶│  📝 REPORT  │
-  │ Break down  │     │ Search web  │     │ Self-evaluate│     │ Synthesize  │
-  │ the goal    │     │ Extract data│     │ Find gaps    │     │ final report│
-  └─────────────┘     └─────────────┘     └──────┬───────┘     └─────────────┘
-                                                 │
-                                          Not satisfied?
-                                                 │
-                                          ┌──────▼───────┐
-                                          │ 🔄 ITERATE   │
-                                          │ Research more │
-                                          └──────────────┘
-```
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/release/python-3100/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+
+An **autonomous AI agent** that thinks, plans, researches, reflects, and generates comprehensive architectural reports — all on its own. Built from the ground up prioritizing **Flow Engineering over bloated frameworks**.
+
+[Features](#-features) • [Quick Start](#-quick-start) • [Architecture](#%EF%B8%8F-architecture) • [The Philosophy](#-the-philosophy-under-the-hood)
+
+</div>
+
+---
+
+## 🎯 What is A.U.R.A.?
+
+Most AI research tools are simply wrappers around a single prompt. A.U.R.A. is different. It's an **autonomous state machine** that mimics a human researcher:
+
+1.  **PLAN:** Break a complex goal into 3-8 specific, actionable web queries.
+2.  **RESEARCH:** Search the web (DuckDuckGo + Google RSS fallback), scrape actual web pages, and extract meaningful data.
+3.  **REFLECT:** Pause and grade its own findings (Completeness & Depth). If the research isn't good enough, it automatically generates *new* queries and loops back.
+4.  **REPORT:** Synthesize everything into a deeply technical, well-structured Markdown document.
 
 ## ✨ Features
 
-- **Truly Autonomous** — Plans, executes, self-evaluates, and iterates without human input
-- **Multi-Provider LLM Support** — Works with:
-  - 🖥️ **Ollama** (Local, FREE — llama3, mistral, phi3, gemma2)
+- **No LangChain. No AutoGen.** Built purely on a robust `while` loop and Python first-principles for 100% transparency.
+- **Multi-Provider LLM Support:**
+  - 🖥️ **Ollama** (Run locally for FREE — e.g., llama3, phi3, gemma2)
   - 🟢 **OpenAI** (GPT-4o, GPT-4o-mini)
   - 🟣 **Anthropic** (Claude 3.5 Sonnet, Claude 3 Opus)
-  - 🔵 **Google** (Gemini 2.0 Flash, Gemini 1.5 Pro)
-  - 🔗 Any **OpenAI-compatible API** (Groq, Together, LM Studio)
-- **Web Search** — DuckDuckGo + Google News RSS (no API keys needed)
-- **Smart Content Extraction** — Extracts relevant text from web pages
-- **Self-Reflection Loop** — Evaluates its own work quality and fills gaps
-- **Beautiful Web UI** — Real-time visualization of agent's thought process
-- **CLI Interface** — Beautiful terminal output with colors
-- **Lightweight** — Minimal dependencies, runs on constrained hardware
+  - 🔵 **Google** (Gemini 2.0 Flash)
+- **Automatic "Compact" Mode:** Automatically detects small < 4B parameter models (like `phi3` or `gemma2:2b`) and drastically optimizes prompts, scrape payloads, and expected output lengths to prevent CPU timeouts.
+- **Robust Parsing:** Small models fail at JSON. A.U.R.A. uses line-oriented text parsing with Regex fallbacks, making it virtually crash-proof.
+- **Beautiful Real-time UI:** Watch the agent "think" via a dark-mode Web UI powered by Server-Sent Events (SSE) that won't timeout your browser.
+
+---
 
 ## 🚀 Quick Start
 
-### 1. Setup
+### 1. Installation
+
+Clone the repository and install the lightweight dependencies:
 
 ```bash
-# Navigate to the project
-cd autonomous-agent
+git clone https://github.com/shanmukhkoya/A.U.R.A.git
+cd A.U.R.A
 
-# Create virtual environment
+# Create a virtual environment
 python -m venv venv
 venv\Scripts\activate        # Windows
 # source venv/bin/activate   # Mac/Linux
 
-# Install dependencies
+# Install requirements
 pip install -r requirements.txt
 ```
 
-### 2. Configure (Optional)
+### 2. Configuration
 
-Edit `config.yaml` to set your preferred provider and model.
+Copy the environment template if you plan to use cloud providers (OpenAI, Anthropic, Google):
 
-For cloud providers, copy `.env.example` to `.env` and add your API keys:
 ```bash
-copy .env.example .env
-# Then edit .env with your keys
+cp .env.example .env
+# Edit .env and add your API keys
 ```
 
-### 3. Run — CLI Mode
+Edit `config.yaml` to set your desired LLM provider, model, and research depth (`quick`, `detailed`, `exhaustive`).
 
+```yaml
+provider: ollama
+ollama:
+  model: llama3
+```
+
+### 3. Run the Agent
+
+**Via the Web UI (Recommended for visualization):**
+```bash
+python web/server.py
+```
+*Open `http://localhost:5000` in your browser.*
+
+**Via the CLI:**
 ```bash
 # Interactive mode
 python run.py
 
-# With a specific goal
+# Direct command
 python run.py "Design a CCaaS migration plan from Avaya to Genesys Cloud"
 
-# Override provider and model
+# Override provider/model on the fly
 python run.py --provider openai --model gpt-4o "Compare SIP trunk providers"
-
-# Exhaustive research
-python run.py --depth exhaustive "AI-powered contact center architecture"
 ```
 
-### 4. Run — Web UI Mode
+---
 
-```bash
-python web/server.py
-# Open http://localhost:5000
+## 🏗️ Architecture overview
+
+```mermaid
+graph TD;
+    USER[User Input] --> PLAN[📝 Planner: Break into search tasks];
+    PLAN --> EXEC_SEARCH[🔍 Executor: DuckDuckGo Search];
+    EXEC_SEARCH --> EXEC_SCRAPE[📄 Executor: Scrape HTML text];
+    EXEC_SCRAPE --> EXEC_ANALYZE[🧠 Executor: LLM analysis];
+    
+    EXEC_ANALYZE --> REFLECT[🤔 Reflector: Quality evaluation];
+    
+    REFLECT -- "Score < 8/10 (MORE Tasks)" --> EXEC_SEARCH;
+    REFLECT -- "Score > 8/10 (SUFFICIENT)" --> REPORT[📑 Synthesizer: Final Markdown Report];
 ```
 
-## 🏗️ Architecture
+A.U.R.A. decouples the **Flask Web Server** from the **Agent Thread** using a background daemon and `queue.Queue()`. The frontend hooks into an `/api/stream` endpoint, reading Server-Sent Events (SSE) to paint the agent's real-time thoughts without HTTP timeout constraints.
 
-```
-autonomous-agent/
-├── agent/                    # Core agent package
-│   ├── core.py              # 🧠 Main autonomous loop
-│   ├── planner.py           # 📋 Goal → research tasks
-│   ├── executor.py          # 🔍 Search → extract → analyze
-│   ├── reflector.py         # 🤔 Self-evaluation & iteration
-│   ├── memory.py            # 💾 Working memory
-│   ├── prompts.py           # 📝 All prompt templates
-│   ├── config.py            # ⚙️ Configuration manager
-│   └── providers/           # 🤖 LLM providers
-│       ├── base.py          # Abstract interface
-│       ├── ollama.py        # Local models
-│       ├── openai_provider.py
-│       ├── anthropic_provider.py
-│       └── google_provider.py
-├── agent/tools/             # 🔧 Agent tools
-│   ├── web_search.py        # Web search (DuckDuckGo + RSS)
-│   └── content_extractor.py # Web page text extraction
-├── web/                     # 🌐 Web UI
-│   ├── server.py            # Flask backend + SSE
-│   ├── index.html
-│   ├── style.css
-│   └── app.js
-├── config.yaml              # Configuration
-├── run.py                   # CLI entry point
-└── outputs/                 # Generated reports
-```
+---
 
-## ⚙️ Configuration
+## 🧠 The Philosophy (Under the Hood)
 
-### Switch Providers
+If you're interested in the deep technical decisions behind A.U.R.A., read the [ARCHITECTURAL_LEARNINGS.md](ARCHITECTURAL_LEARNINGS.md) document. It covers:
+1. **Flow Engineering over Frameworks:** Why we ditched LangChain.
+2. **The Economics of Token Budgets:** How we got a 3.8B model running locally on a CPU without timing out.
+3. **Robust Prompt Engineering:** Why forcing LLMs to output strict JSON is a trap, and how Regex saves the day.
+4. **Tool Resilience:** Gracefully handling paywalls and Cloudflare blocks.
 
-Edit `config.yaml`:
-```yaml
-# Use local Ollama
-provider: ollama
-ollama:
-  model: llama3
+---
 
-# Use OpenAI
-provider: openai
-openai:
-  model: gpt-4o-mini
+## 🤝 Contributing
 
-# Use Anthropic
-provider: anthropic
-anthropic:
-  model: claude-3-5-sonnet-20241022
-```
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-### Agent Behavior
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-```yaml
-agent:
-  max_iterations: 3        # Max reflect-iterate cycles
-  max_search_results: 5    # Results per search query
-  research_depth: detailed # quick | detailed | exhaustive
-```
-
-## 🧠 How It Works
-
-1. **PLAN** — The agent receives your goal and uses the LLM to break it into 3-8 focused research queries
-2. **RESEARCH** — For each query, it searches the web, extracts content from top pages, and analyzes findings
-3. **REFLECT** — After researching, it evaluates completeness (1-10) and depth (1-10), identifies gaps
-4. **ITERATE** — If quality is below threshold, it generates new queries and researches more
-5. **SYNTHESIZE** — Once satisfied, it generates a comprehensive markdown report with sections, tables, and recommendations
+---
 
 ## 📄 License
 
-MIT License — use freely for any purpose.
+Distributed under the MIT License. See `LICENSE` for more information. (You may need to quickly add a LICENSE file!)
